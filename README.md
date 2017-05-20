@@ -1,1 +1,1 @@
-# esrest
+# esrest ![Build Status](https://travis-ci.org/easonlin404/esrest.svg?branch=master)
