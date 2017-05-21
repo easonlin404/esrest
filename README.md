@@ -21,7 +21,7 @@ __GET__/__POST__/__PUT__/__DELETE__
 res, err := esrest.New().Get("http://httpbin.org/get").Do()
 
 ```
-Set header (Default ContentType is "application/json")
+Add header (Default ContentType is "application/json")
 ``` go
 res, err := esrest.New().
 		    Get("http://httpbin.org/get").
@@ -58,13 +58,21 @@ res, err := esrest.New().
 		    Body(string(`{"message":"ok"}`)).
 		    Do()
 ```
+Add Query parameter:
+``` go
+res, err := esrest.New().
+            Get("http://httpbin.org/get").
+            Query("Param1", "value").
+            Do()
+```
 
 Response JSON struct:
 ``` go
-h := &struct {
+json := struct {
 		Message string `json:"message"`
 	}{}
 res, err := esrest.New().
             Post("http://httpbin.org/post").
             DoJson(json)
 ```
+
