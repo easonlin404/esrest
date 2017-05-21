@@ -7,6 +7,7 @@ Easy, elegant, fluent HTTP client API for Go
 ## Features
 * Support __GET__/__POST__/__PUT__/__DELETE__ http methods
 * Only use `Body` chain method to send payload(JSON/string/slice) 
+* Receive unmarshal JSON
 * todo
 
 ## Installation
@@ -62,7 +63,7 @@ res, err := esrest.New().
 		    Do()
 ```
 
-Response JSON struct:
+Receive unmarshal JSON:
 ``` go
 json := struct {
 		Message string `json:"message"`
