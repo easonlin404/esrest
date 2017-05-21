@@ -5,8 +5,9 @@ Easy, elegant, fluent HTTP client API for Go
 [![Codecov branch](https://img.shields.io/codecov/c/github/easonlin404/esrest/master.svg)](https://codecov.io/gh/easonlin404/esrest)
 
 ## Features
-* Support Get/Post/Put/Delete http methods
-* Only call 'body' chain method to send payload(Json/String/byte slice) 
+* __100%__ code coverage
+* Support __GET__/__POST__/__PUT__/__DELETE__ http methods
+* Only use __Body__ chain method to send payload(__JSON__/__String__/__Slice__) 
 * todo
 
 ## Installation
@@ -14,4 +15,46 @@ Easy, elegant, fluent HTTP client API for Go
 $ go get github.com/easonlin404/esrest
 ```
 ## Usage
-todo
+
+__GET__/__POST__/__PUT__/__DELETE__
+```go
+
+res, err := esrest.New().Get("http://httpbin.org/get").Do()
+
+```
+Set header (Default ContentType is "application/json")
+``` go
+res, err := esrest.New().
+		    Get("http://httpbin.org/get").
+		    Header("MyHader", "headvalue").
+		    Do()
+```
+
+Send __JSON__/__String__/__Slice__ payload only call same __Body__ chain method:
+``` go
+//JSON
+json := struct {
+		Message string `json:"message"`
+	}{"ok"}
+
+res, err := esrest.New().
+		    Post("http://httpbin.org/post").
+		    Body(json).
+		    Do()
+```
+
+``` go
+//slice
+res, err := esrest.New().
+		    Post("http://httpbin.org/post").
+		    Body([]byte(`{"message":"ok"}`)).
+		    Do()
+```
+``` go
+//string
+res, err := esrest.New().
+		    Post("http://httpbin.org/post").
+		    Body(string(`{"message":"ok"}`)).
+		    Do()
+```
+
