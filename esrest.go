@@ -15,8 +15,9 @@ type Builder struct {
 	Url     string
 	Method  string
 	Path    string
-	BodyByte []byte
 	Headers map[string]string
+
+	bodyByte []byte
 }
 
 const DefaultContentType = "application/json"
@@ -57,7 +58,7 @@ func (b *Builder) Header(key, value string) *Builder {
 }
 
 func (b *Builder) Body(body []byte) *Builder {
-	b.BodyByte = body
+	b.bodyByte = body
 	return b
 }
 
@@ -81,8 +82,8 @@ func (b *Builder) Do() (*http.Response, error) {
 
 func (b *Builder) newRequest() *http.Request {
 	var reader io.Reader
-	if len(b.BodyByte) > 0 {
-		reader = bytes.NewBuffer(b.BodyByte)
+	if len(b.bodyByte) > 0 {
+		reader = bytes.NewBuffer(b.bodyByte)
 	}
 
 	req, _ := http.NewRequest(b.Method, b.Url, reader)

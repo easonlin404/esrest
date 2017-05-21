@@ -17,14 +17,19 @@ func TestNew(t *testing.T) {
 	assert.Equal(t, n1 != nil, true)
 }
 
-func TestSetGet(t *testing.T) {
+func TestGet(t *testing.T) {
 	b := New().Get("https://www.google.com")
+	b.Body([]byte("message=ok"))
 	assert.Equal(t, b.Method, http.MethodGet)
 }
 
-func TestSetPost(t *testing.T) {
+func TestPost(t *testing.T) {
 	b := New().Post("https://www.google.com")
 	assert.Equal(t, b.Method, http.MethodPost)
+	b.Body([]byte("hi"))
+	_,err:=b.Do()
+
+	assert.Equal(t,nil,err)
 }
 
 func TestSetPut(t *testing.T) {
