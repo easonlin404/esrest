@@ -7,8 +7,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-
-	"fmt"
 	"reflect"
 	"time"
 )
@@ -67,24 +65,19 @@ func (b *Builder) Query(key, value string) *Builder {
 }
 
 func (b *Builder) Body(v interface{}) *Builder {
-
 	rv := reflect.ValueOf(v)
-	fmt.Println(rv)
-	fmt.Println(rv.Kind())
+	//fmt.Printf("%+v\n",rv)
+	//fmt.Println(rv.Kind())
 
 	switch rv.Kind() {
 	case reflect.String:
 		b.bodyByte = []byte(rv.String())
-	case reflect.Array:
-		fmt.Println(rv)
-		fmt.Println(rv.Kind())
-	case reflect.Ptr:
-		fmt.Println(rv)
-		fmt.Println(rv.Kind())
+	case reflect.Slice:
+		slice, _ := rv.Interface().([]byte)
+		b.bodyByte = slice
 	case reflect.Struct:
-		fmt.Println(rv)
-		fmt.Println(rv.Kind())
-
+		byte, _ := json.Marshal(v)
+		b.bodyByte = byte
 	}
 	return b
 }

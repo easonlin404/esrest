@@ -2,12 +2,12 @@ package esrest
 
 import (
 	"errors"
+	"fmt"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"fmt"
-	"io/ioutil"
 )
 
 type H struct {
@@ -24,7 +24,7 @@ func TestGet(t *testing.T) {
 	h := &H{}
 	r, _ := New().
 		Get("http://httpbin.org/get").
-		Query("Param1","value").
+		Query("Param1", "value").
 		DoJson(h)
 	assert.Equal(t, 200, r.StatusCode)
 	assert.Equal(t, "value", h.Args.Param1)
@@ -33,7 +33,7 @@ func TestGet(t *testing.T) {
 
 func TestPost(t *testing.T) {
 	h := &H{}
-	b:= string(`{"message":"ok"}`)
+	b := string(`{"message":"ok"}`)
 	r, _ := New().
 		Post("http://httpbin.org/post").
 		Body(b).
@@ -85,7 +85,7 @@ func TestDummyUrl(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestAsJsonSuccess(t *testing.T) {
+func TestDoJsonSuccess(t *testing.T) {
 	type Json struct {
 		Message string `json:"message"`
 	}
@@ -105,7 +105,34 @@ func TestAsJsonSuccess(t *testing.T) {
 	assert.Equal(t, json.Message, "hi")
 }
 
-func TestAsJsonFail(t *testing.T) {
+func TestDoJsonFail(t *testing.T) {
 	_, err := New().Get("dummy").DoJson(nil)
 	assert.Error(t, err)
+}
+
+func TestSendByteSliceBody(t *testing.T) {
+	h := &H{}
+	b := []byte(`{"message":"ok"}`) //send byte slice body
+	r, _ := New().
+		Post("http://httpbin.org/post").
+		Body(b).
+		DoJson(h)
+	assert.Equal(t, 200, r.StatusCode)
+	assert.Equal(t, string(b), h.Data)
+
+}
+
+func TestSendStructBody(t *testing.T) {
+	h := &H{}
+	b := struct {
+		Message string `json:"message"`
+	}{"ok"}
+
+	r, _ := New().
+		Post("http://httpbin.org/post").
+		Body(b).
+		DoJson(h)
+	assert.Equal(t, 200, r.StatusCode)
+	assert.Equal(t, `{"message":"ok"}`, h.Data)
+
 }
