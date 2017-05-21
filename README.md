@@ -5,9 +5,8 @@ Easy, elegant, fluent HTTP client API for Go
 [![Codecov branch](https://img.shields.io/codecov/c/github/easonlin404/esrest/master.svg)](https://codecov.io/gh/easonlin404/esrest)
 
 ## Features
-* __100%__ code coverage
 * Support __GET__/__POST__/__PUT__/__DELETE__ http methods
-* Only use __Body__ chain method to send payload(__JSON__/__String__/__Slice__) 
+* Only use `Body` chain method to send payload(__JSON__/__String__/__Slice__) 
 * todo
 
 ## Installation
@@ -30,7 +29,7 @@ res, err := esrest.New().
 		    Do()
 ```
 
-Send __JSON__/__String__/__Slice__ payload only call same __Body__ chain method:
+Sending __JSON_ payload use call `Body` chain method smae as other:
 ``` go
 //JSON
 json := struct {
@@ -39,7 +38,9 @@ json := struct {
 
 res, err := esrest.New().
 		    Post("http://httpbin.org/post").
-		    Body(json).
+		    Body(struct {
+                 		Message string `json:"message"`
+                 	}{"ok"}).
 		    Do()
 ```
 
