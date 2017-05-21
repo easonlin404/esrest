@@ -6,7 +6,7 @@ Easy, elegant, fluent HTTP client API for Go
 
 ## Features
 * Support __GET__/__POST__/__PUT__/__DELETE__ http methods
-* Only use `Body` chain method to send payload(JSON/String/Slice) 
+* Only use `Body` chain method to send payload(JSON/string/slice) 
 * todo
 
 ## Installation
@@ -32,10 +32,6 @@ res, err := esrest.New().
 Sending _JSON_ payload use call `Body` chain method smae as other:
 ``` go
 //JSON
-json := struct {
-		Message string `json:"message"`
-	}{"ok"}
-
 res, err := esrest.New().
 		    Post("http://httpbin.org/post").
 		    Body(struct {
