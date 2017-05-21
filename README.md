@@ -59,3 +59,12 @@ res, err := esrest.New().
 		    Do()
 ```
 
+Response JSON struct:
+``` go
+h := &struct {
+		Message string `json:"message"`
+	}{}
+res, err := esrest.New().
+            Post("http://httpbin.org/post").
+            DoJson(json)
+```
