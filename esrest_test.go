@@ -6,54 +6,72 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"fmt"
+	"io/ioutil"
 )
 
-func TestNew(t *testing.T) {
-	n1 := New()
-	n2 := New()
-
-	assert.Equal(t, n1.Headers != nil, true)
-	assert.Equal(t, n1, n2)
-	assert.Equal(t, n1 != nil, true)
+type H struct {
+	Data string `json:"data"`
+	Args struct {
+		Param1 string `json:"param1"`
+	}
+	Headers struct {
+		TestHader string `json:"testHader"`
+	}
 }
 
 func TestGet(t *testing.T) {
-	b := New().Get("https://www.google.com")
-	b.Body([]byte("message=ok"))
-	assert.Equal(t, b.Method, http.MethodGet)
+	h := &H{}
+	r, _ := New().
+		Get("http://httpbin.org/get").
+		Query("Param1","value").
+		DoJson(h)
+	assert.Equal(t, 200, r.StatusCode)
+	assert.Equal(t, "value", h.Args.Param1)
+	fmt.Printf("%+v", h)
 }
 
 func TestPost(t *testing.T) {
-	b := New().Post("https://www.google.com")
-	assert.Equal(t, b.Method, http.MethodPost)
-	b.Body([]byte("hi"))
-	_,err:=b.Do()
+	h := &H{}
+	b:= string(`{"message":"ok"}`)
+	r, _ := New().
+		Post("http://httpbin.org/post").
+		Body(b).
+		DoJson(h)
+	assert.Equal(t, 200, r.StatusCode)
+	assert.Equal(t, b, h.Data)
 
-	assert.Equal(t,nil,err)
 }
 
-func TestSetPut(t *testing.T) {
-	b := New().Put("https://www.google.com")
-	assert.Equal(t, b.Method, http.MethodPut)
+func TestPut(t *testing.T) {
+	r, _ := New().
+		Put("http://httpbin.org/put").
+		Do()
+	assert.Equal(t, 200, r.StatusCode)
 }
 
-func TestSetDelete(t *testing.T) {
-	b := New().Delete("https://www.google.com")
-	assert.Equal(t, b.Method, http.MethodDelete)
+func TestDelete(t *testing.T) {
+	r, _ := New().
+		Delete("http://httpbin.org/delete").
+		Do()
+	assert.Equal(t, 200, r.StatusCode)
 }
 
-func TestSetHeader(t *testing.T) {
-	b := New().Header("key", "value")
-	value := b.Headers["key"]
-	assert.Equal(t, "value", value)
-
-	b.Get("https://www.google.com").Do()
-
+func TestHeader(t *testing.T) {
+	h := &H{}
+	r, _ := New().
+		Get("http://httpbin.org/headers").
+		Header("TestHader", "value").
+		DoJson(h)
+	assert.Equal(t, 200, r.StatusCode)
+	assert.Equal(t, "value", h.Headers.TestHader)
 }
 
 func TestValidOk(t *testing.T) {
-	_, err := New().Get("https://www.google.com").Do()
+	r, err := New().Get("http://httpbin.org/get").Do()
 	assert.Equal(t, nil, err)
+	body, _ := ioutil.ReadAll(r.Body)
+	fmt.Println(string(body))
 }
 
 func TestValidFail(t *testing.T) {
@@ -83,11 +101,11 @@ func TestAsJsonSuccess(t *testing.T) {
 
 	json := &Json{}
 
-	New().Get(server.URL).AsJson(json)
+	New().Get(server.URL).DoJson(json)
 	assert.Equal(t, json.Message, "hi")
 }
 
 func TestAsJsonFail(t *testing.T) {
-	_,err := New().Get("dummy").AsJson(nil)
-	assert.Error(t,err)
+	_, err := New().Get("dummy").DoJson(nil)
+	assert.Error(t, err)
 }

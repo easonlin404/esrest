@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
+
+	"fmt"
+	"reflect"
 	"time"
-	"io"
 )
 
 type Builder struct {
@@ -16,6 +18,7 @@ type Builder struct {
 	Method  string
 	Path    string
 	Headers map[string]string
+	Querys  map[string]string
 
 	bodyByte []byte
 }
@@ -25,6 +28,7 @@ const DefaultContentType = "application/json"
 func New() *Builder {
 	return &Builder{
 		Headers: make(map[string]string),
+		Querys:  make(map[string]string),
 	}
 }
 
@@ -57,8 +61,31 @@ func (b *Builder) Header(key, value string) *Builder {
 	return b
 }
 
-func (b *Builder) Body(body []byte) *Builder {
-	b.bodyByte = body
+func (b *Builder) Query(key, value string) *Builder {
+	b.Querys[key] = value
+	return b
+}
+
+func (b *Builder) Body(v interface{}) *Builder {
+
+	rv := reflect.ValueOf(v)
+	fmt.Println(rv)
+	fmt.Println(rv.Kind())
+
+	switch rv.Kind() {
+	case reflect.String:
+		b.bodyByte = []byte(rv.String())
+	case reflect.Array:
+		fmt.Println(rv)
+		fmt.Println(rv.Kind())
+	case reflect.Ptr:
+		fmt.Println(rv)
+		fmt.Println(rv.Kind())
+	case reflect.Struct:
+		fmt.Println(rv)
+		fmt.Println(rv.Kind())
+
+	}
 	return b
 }
 
@@ -88,25 +115,35 @@ func (b *Builder) newRequest() *http.Request {
 
 	req, _ := http.NewRequest(b.Method, b.Url, reader)
 
-	fmt.Println(req.Header.Get("Content-Type"))
+	//Set Default Content-Type Header
 	if len(req.Header.Get("Content-Type")) == 0 {
 		req.Header.Set("Content-Type", DefaultContentType)
 	}
 
+	//Set Header
 	for k, v := range b.Headers {
 		req.Header.Set(k, v)
 	}
 
+	//Set Query
+	q := req.URL.Query()
+	for k, v := range b.Querys {
+		q.Add(k, v)
+	}
+	req.URL.RawQuery = q.Encode()
+
 	return req
 }
 
-func (b *Builder) AsJson(v interface{}) (*http.Response, error) {
+func (b *Builder) DoJson(v interface{}) (*http.Response, error) {
 	resp, err := b.Do()
 	if err != nil {
 		return resp, err
 	}
 	body, _ := ioutil.ReadAll(resp.Body)
-	json.Unmarshal(body, &v)
+	resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+	json.Unmarshal(body, v)
+
 	return resp, nil
 }
 
