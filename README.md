@@ -61,9 +61,9 @@ res, err := esrest.New().
 Add Query parameter:
 ``` go
 res, err := esrest.New().
-            Get("http://httpbin.org/get").
-            Query("Param1", "value").
-            Do()
+		    Get("http://httpbin.org/get").
+		    Query("Param1", "value").
+		    Do()
 ```
 
 Response JSON struct:
@@ -72,7 +72,7 @@ json := struct {
 		Message string `json:"message"`
 	}{}
 res, err := esrest.New().
-            Post("http://httpbin.org/post").
-            DoJson(json)
+		    Post("http://httpbin.org/post").
+		    DoJson(json)
 ```
 
