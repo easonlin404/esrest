@@ -6,13 +6,15 @@ Easy, elegant, fluent HTTP client API for Go
 
 ## Features
 * Support __GET__/__POST__/__PUT__/__DELETE__ http methods
-* Only use `Body` chain method to send payload(JSON/string/slice) 
+* Support Debug, Timeout, Logger options
+* Only use `Body` chain method to send payload(JSON/string/slice/pointer) 
 * Receive unmarshal JSON
+
 * todo
 
 ## Installation
 ```sh
-$ go get github.com/easonlin404/esrest
+$ go get -u github.com/easonlin404/esrest
 ```
 ## Usage
 
@@ -30,25 +32,28 @@ res, err := esrest.New().
 		    Do()
 ```
 
-Sending _JSON_ payload use call `Body` chain method smae as other:
+Sending _JSON_ payload use `Body` chain method same as other:
 ``` go
-//JSON
+//JSON struct
 res, err := esrest.New().
 		    Post("http://httpbin.org/post").
 		    Body(struct {
                  		Message string `json:"message"`
                  	}{"ok"}).
 		    Do()
-```
-
-``` go
+//pointer to JSON struct
+res, err := esrest.New().
+		    Post("http://httpbin.org/post").
+		    Body(&struct {
+                 		Message string `json:"message"`
+                 	}{"ok"}).
+		    Do()		    
 //slice
 res, err := esrest.New().
 		    Post("http://httpbin.org/post").
 		    Body([]byte(`{"message":"ok"}`)).
 		    Do()
-```
-``` go
+		    
 //string
 res, err := esrest.New().
 		    Post("http://httpbin.org/post").
@@ -72,4 +77,15 @@ res, err := esrest.New().
 		    Post("http://httpbin.org/post").
 		    DoJson(json)
 ```
+Debug:
 
+Print http request and response debug payload at stdout, and you also can use your logger by using `Logger` option
+``` go
+mylogger:=log.New(os.Stdout, "", log.LstdFlags)
+
+res, err := esrest.New().
+		    Debug(true).
+		    Logger(mylogger).  //optional
+		    Get("http://httpbin.org/get").
+		    Do()
+```
