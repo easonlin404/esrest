@@ -2,12 +2,13 @@ package esrest
 
 import (
 	"errors"
-	"fmt"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"log"
+	"os"
+	"time"
 )
 
 type H struct {
@@ -28,7 +29,6 @@ func TestGet(t *testing.T) {
 		DoJson(h)
 	assert.Equal(t, 200, r.StatusCode)
 	assert.Equal(t, "value", h.Args.Param1)
-	fmt.Printf("%+v", h)
 }
 
 func TestPost(t *testing.T) {
@@ -68,16 +68,20 @@ func TestHeader(t *testing.T) {
 }
 
 func TestValidOk(t *testing.T) {
-	r, err := New().Get("http://httpbin.org/get").Do()
+	_, err := New().Get("http://httpbin.org/get").Do()
 	assert.Equal(t, nil, err)
-	body, _ := ioutil.ReadAll(r.Body)
-	fmt.Println(string(body))
 }
 
-func TestValidFail(t *testing.T) {
+func TestValidUrlFail(t *testing.T) {
 	_, err := New().Do()
 	e := errors.New("url is empty")
 	assert.Equal(t, err, e)
+}
+
+func TestValidLoggerFail(t *testing.T) {
+	_, err := New().Get("dummy").Logger(nil).Do()
+	e := errors.New("logger is empty")
+	assert.Equal(t,e,err)
 }
 
 func TestDummyUrl(t *testing.T) {
@@ -134,5 +138,45 @@ func TestSendStructBody(t *testing.T) {
 		DoJson(h)
 	assert.Equal(t, 200, r.StatusCode)
 	assert.Equal(t, `{"message":"ok"}`, h.Data)
+
+}
+
+func TestDebugMode(t *testing.T) {
+	h := &H{}
+	b := struct {
+		Message string `json:"message"`
+	}{"ok"}
+
+	r, _ := New().
+		Debug(true).
+		Header("h","v").
+		Post("http://httpbin.org/post").
+		Body(b).
+		DoJson(h)
+	assert.Equal(t, 200, r.StatusCode)
+	assert.Equal(t, `{"message":"ok"}`, h.Data)
+
+}
+
+func TestLogger(t *testing.T) {
+	h := &H{}
+	r, _ := New().
+		Logger(log.New(os.Stdout, "", log.LstdFlags)).
+		Get("http://httpbin.org/get").
+		Query("Param1", "value").
+		DoJson(h)
+	assert.Equal(t, 200, r.StatusCode)
+	assert.Equal(t, "value", h.Args.Param1)
+
+}
+
+func TestTimeout(t *testing.T) {
+	r, _ := New().
+		Timeout(time.Duration(10 * time.Second)).
+		Get("http://httpbin.org/get").
+		Query("Param1", "value").
+		Do()
+	assert.Equal(t, 200, r.StatusCode)
+
 
 }

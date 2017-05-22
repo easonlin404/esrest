@@ -6,18 +6,24 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"net/http/httputil"
+	"os"
 	"reflect"
 	"time"
 )
 
 type Builder struct {
-	Url     string
-	Method  string
-	Path    string
-	Headers map[string]string
-	Querys  map[string]string
+	Url       string
+	Method    string
+	Path      string
+	Headers   map[string]string
+	Querys    map[string]string
+	DebugMode bool
 
+	logger   *log.Logger
+	timeout  time.Duration
 	bodyByte []byte
 }
 
@@ -27,6 +33,8 @@ func New() *Builder {
 	return &Builder{
 		Headers: make(map[string]string),
 		Querys:  make(map[string]string),
+		logger:  log.New(os.Stdout, "", log.LstdFlags),
+		timeout: time.Duration(20 * time.Second),
 	}
 }
 
@@ -87,13 +95,26 @@ func (b *Builder) Do() (*http.Response, error) {
 		return nil, err
 	}
 
-	client := &http.Client{Timeout: time.Duration(20 * time.Second)}
-	resp, err := client.Do(b.newRequest())
+	client := &http.Client{Timeout: b.timeout}
+
+	request := b.newRequest()
+
+	if b.DebugMode {
+		dump, _ := httputil.DumpRequest(request, true)
+		log.Println(string(dump))
+	}
+
+	resp, err := client.Do(request)
 	if err != nil {
 		return nil, err
 	}
 
 	defer resp.Body.Close()
+
+	if b.DebugMode {
+		dump, _ := httputil.DumpResponse(resp, true)
+		log.Println(string(dump))
+	}
 
 	body, _ := ioutil.ReadAll(resp.Body)
 	resp.Body = ioutil.NopCloser(bytes.NewBuffer(body))
@@ -144,5 +165,23 @@ func (b *Builder) valid() error {
 	if len(b.Url) == 0 {
 		return errors.New("url is empty")
 	}
+	if b.logger == nil {
+		return errors.New("logger is empty")
+	}
 	return nil
+}
+
+func (b *Builder) Debug(debug bool) *Builder {
+	b.DebugMode = debug
+	return b
+}
+
+func (b *Builder) Logger(log *log.Logger) *Builder {
+	b.logger = log
+	return b
+}
+
+func (b *Builder) Timeout(timeout time.Duration) *Builder {
+	b.timeout = timeout
+	return b
 }
