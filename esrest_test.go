@@ -140,6 +140,21 @@ func TestSendStructBody(t *testing.T) {
 	assert.Equal(t, `{"message":"ok"}`, h.Data)
 
 }
+func TestSendPtrStructBody(t *testing.T) {
+	h := &H{}
+
+	b := &struct {
+		Message string `json:"message"`
+	}{"ok"}
+
+	r, _ := New().
+		Post("http://httpbin.org/post").
+		Body(b).
+		DoJson(h)
+	assert.Equal(t, 200, r.StatusCode)
+	assert.Equal(t, `{"message":"ok"}`, h.Data)
+
+}
 
 func TestDebugMode(t *testing.T) {
 	h := &H{}

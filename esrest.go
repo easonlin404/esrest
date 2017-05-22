@@ -83,7 +83,7 @@ func (b *Builder) Body(v interface{}) *Builder {
 	case reflect.Slice:
 		slice, _ := rv.Interface().([]byte)
 		b.bodyByte = slice
-	case reflect.Struct:
+	case reflect.Struct, reflect.Ptr :
 		byte, _ := json.Marshal(v)
 		b.bodyByte = byte
 	}
@@ -101,7 +101,7 @@ func (b *Builder) Do() (*http.Response, error) {
 
 	if b.DebugMode {
 		dump, _ := httputil.DumpRequest(request, true)
-		log.Println(string(dump))
+		b.logger.Println(string(dump))
 	}
 
 	resp, err := client.Do(request)
@@ -113,7 +113,7 @@ func (b *Builder) Do() (*http.Response, error) {
 
 	if b.DebugMode {
 		dump, _ := httputil.DumpResponse(resp, true)
-		log.Println(string(dump))
+		b.logger.Println(string(dump))
 	}
 
 	body, _ := ioutil.ReadAll(resp.Body)
