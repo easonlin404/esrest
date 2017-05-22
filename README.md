@@ -70,7 +70,7 @@ res, err := esrest.New().
 
 Receive unmarshal JSON:
 ``` go
-json := struct {
+json := &struct {
 		Message string `json:"message"`
 	}{}
 res, err := esrest.New().
@@ -79,7 +79,7 @@ res, err := esrest.New().
 ```
 Debug:
 
-Print http request and response debug payload at stdout, and you also can use your logger by using `Logger` option
+Print http request and response debug payload at stdout, and you also can use your logger by using `Logger` chain
 ``` go
 mylogger:=log.New(os.Stdout, "", log.LstdFlags)
 
