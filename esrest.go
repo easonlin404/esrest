@@ -22,10 +22,14 @@ type Builder struct {
 	Querys    map[string]string
 	DebugMode bool
 
-	logger   *log.Logger
-	timeout  time.Duration
-	bodyByte []byte
+	logger    *log.Logger
+	timeout   time.Duration
+	basicAuth auth
+	bodyByte  []byte
 }
+
+
+type auth  struct{ username, password string }
 
 const DefaultContentType = "application/json"
 
@@ -62,6 +66,12 @@ func (b *Builder) Delete(url string) *Builder {
 	return b
 }
 
+func (b *Builder) Head(url string) *Builder {
+	b.Url = url
+	b.Method = http.MethodHead
+	return b
+}
+
 func (b *Builder) Header(key, value string) *Builder {
 	b.Headers[key] = value
 	return b
@@ -83,7 +93,7 @@ func (b *Builder) Body(v interface{}) *Builder {
 	case reflect.Slice:
 		slice, _ := rv.Interface().([]byte)
 		b.bodyByte = slice
-	case reflect.Struct, reflect.Ptr :
+	case reflect.Struct, reflect.Ptr:
 		byte, _ := json.Marshal(v)
 		b.bodyByte = byte
 	}
@@ -146,6 +156,10 @@ func (b *Builder) newRequest() *http.Request {
 	}
 	req.URL.RawQuery = q.Encode()
 
+	if b.basicAuth != (auth{}) {
+		req.SetBasicAuth(b.basicAuth.username, b.basicAuth.password)
+	}
+
 	return req
 }
 
@@ -183,5 +197,10 @@ func (b *Builder) Logger(log *log.Logger) *Builder {
 
 func (b *Builder) Timeout(timeout time.Duration) *Builder {
 	b.timeout = timeout
+	return b
+}
+
+func (b *Builder) BasicAuth(username, password string) *Builder {
+	b.basicAuth = auth{username:username,password:password}
 	return b
 }

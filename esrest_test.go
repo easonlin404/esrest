@@ -3,11 +3,11 @@ package esrest
 import (
 	"errors"
 	"github.com/stretchr/testify/assert"
+	"log"
 	"net/http"
 	"net/http/httptest"
-	"testing"
-	"log"
 	"os"
+	"testing"
 	"time"
 )
 
@@ -57,6 +57,13 @@ func TestDelete(t *testing.T) {
 	assert.Equal(t, 200, r.StatusCode)
 }
 
+func TestHead(t *testing.T) {
+	r, _ := New().
+		Head("http://httpbin.org").
+		Do()
+	assert.Equal(t, 200, r.StatusCode)
+}
+
 func TestHeader(t *testing.T) {
 	h := &H{}
 	r, _ := New().
@@ -81,7 +88,7 @@ func TestValidUrlFail(t *testing.T) {
 func TestValidLoggerFail(t *testing.T) {
 	_, err := New().Get("dummy").Logger(nil).Do()
 	e := errors.New("logger is empty")
-	assert.Equal(t,e,err)
+	assert.Equal(t, e, err)
 }
 
 func TestDummyUrl(t *testing.T) {
@@ -164,7 +171,7 @@ func TestDebugMode(t *testing.T) {
 
 	r, _ := New().
 		Debug(true).
-		Header("h","v").
+		Header("h", "v").
 		Post("http://httpbin.org/post").
 		Body(b).
 		DoJson(h)
@@ -187,11 +194,32 @@ func TestLogger(t *testing.T) {
 
 func TestTimeout(t *testing.T) {
 	r, _ := New().
-		Timeout(time.Duration(10 * time.Second)).
+		Timeout(time.Duration(10*time.Second)).
 		Get("http://httpbin.org/get").
 		Query("Param1", "value").
 		Do()
 	assert.Equal(t, 200, r.StatusCode)
 
+}
 
+func TestBasicAuth(t *testing.T) {
+	handler := func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		auth := r.Header.Get("Authorization")
+
+		if auth == "Basic dXNlcjpwYXNzd29yZA==" {
+			w.WriteHeader(http.StatusOK)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(handler))
+	defer server.Close()
+
+	r,_:=New().
+		BasicAuth("user", "password").
+		Get(server.URL).
+		Do()
+	assert.Equal(t, 200, r.StatusCode)
 }
