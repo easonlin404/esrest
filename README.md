@@ -5,8 +5,8 @@ Easy, elegant, fluent HTTP client API for Go
 [![Codecov branch](https://img.shields.io/codecov/c/github/easonlin404/esrest/master.svg)](https://codecov.io/gh/easonlin404/esrest)
 
 ## Features
-* Support __GET__/__POST__/__PUT__/__DELETE__ http methods
-* Support Debug, Timeout, Logger options
+* Support __GET__/__POST__/__PUT__/__DELETE__/__HEAD__ http methods
+* Support Debug, Timeout, Logger,Basic Authentication options
 * Only use `Body` chain method to send payload(JSON/string/slice/pointer) 
 * Receive unmarshal JSON
 
@@ -77,6 +77,14 @@ res, err := esrest.New().
 		    Post("http://httpbin.org/post").
 		    DoJson(json)
 ```
+Basic Authentication:
+``` go
+res, err := esrest.New().
+		    BasicAuth("user", "password").
+		    Get("http://httpbin.org/get").
+		    Do()
+```
+
 Debug:
 
 Print http request and response debug payload at stdout, and you also can use your logger by using `Logger` chain
