@@ -5,12 +5,15 @@ Easy, elegant, fluent HTTP client API for Go
 [![Codecov branch](https://img.shields.io/codecov/c/github/easonlin404/esrest/master.svg)](https://codecov.io/gh/easonlin404/esrest)
 
 ## Features
-* Support __GET__/__POST__/__PUT__/__DELETE__/__HEAD__ http methods
-* Support Debug, Timeout, Logger,Basic Authentication options
-* Only use `Body` chain method to send payload(JSON/string/slice/pointer) 
-* Receive unmarshal JSON
-
-* todo
+- [x] Support basic HTTP __GET__/__POST__/__PUT__/__DELETE__/__HEAD__  in a fluent style
+- [x] Only use `Body` fluent function to send payload(JSON/string/slice/pointer) 
+- [x] Basic Authentication
+- [x] Request timeout 
+- [x] Debug with customized Logger
+- [x] Receive unmarshal JSON
+- [ ] Multipart request
+- [ ] [Context](https://golang.org/pkg/context/)
+- [ ] todo
 
 ## Installation
 ```sh
