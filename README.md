@@ -13,6 +13,7 @@ Easy, elegant, fluent HTTP client API for Go
 - [x] Receive unmarshal JSON
 - [ ] Multipart request
 - [ ] [Context](https://golang.org/pkg/context/)
+- [ ] application/x-www-form-urlencoded
 - [ ] todo
 
 ## Installation
