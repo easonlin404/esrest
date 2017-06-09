@@ -4,6 +4,7 @@ Easy, elegant, fluent HTTP client API for Go
 [![Travis branch](https://img.shields.io/travis/easonlin404/esrest/master.svg)](https://travis-ci.org/easonlin404/esrest)
 [![Codecov branch](https://img.shields.io/codecov/c/github/easonlin404/esrest/master.svg)](https://codecov.io/gh/easonlin404/esrest)
 [![Go Report Card](https://goreportcard.com/badge/github.com/easonlin404/esrest)](https://goreportcard.com/report/github.com/easonlin404/esrest)
+[![GoDoc](https://godoc.org/github.com/easonlin404/esrest?status.svg)](https://godoc.org/github.com/easonlin404/esrest)
 
 ## Features
 - [x] Support basic HTTP __GET__/__POST__/__PUT__/__DELETE__/__HEAD__  in a fluent style
