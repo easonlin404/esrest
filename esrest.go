@@ -28,8 +28,7 @@ type Builder struct {
 	bodyByte  []byte
 }
 
-
-type auth  struct{ username, password string }
+type auth struct{ username, password string }
 
 const DefaultContentType = "application/json"
 
@@ -201,6 +200,6 @@ func (b *Builder) Timeout(timeout time.Duration) *Builder {
 }
 
 func (b *Builder) BasicAuth(username, password string) *Builder {
-	b.basicAuth = auth{username:username,password:password}
+	b.basicAuth = auth{username: username, password: password}
 	return b
 }

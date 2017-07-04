@@ -217,7 +217,7 @@ func TestBasicAuth(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(handler))
 	defer server.Close()
 
-	r,_:=New().
+	r, _ := New().
 		BasicAuth("user", "password").
 		Get(server.URL).
 		Do()
