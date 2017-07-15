@@ -1,3 +1,4 @@
+// Package esrest implements functions to wrapper around the HTTP client API.
 package esrest
 
 import (
@@ -14,6 +15,7 @@ import (
 	"time"
 )
 
+// Buiilder is a object that help to build fluent style API.
 type Builder struct {
 	Url       string
 	Method    string
@@ -32,6 +34,7 @@ type auth struct{ username, password string }
 
 const DefaultContentType = "application/json"
 
+// New returns an new Builder object.
 func New() *Builder {
 	return &Builder{
 		Headers: make(map[string]string),
@@ -81,6 +84,36 @@ func (b *Builder) Query(key, value string) *Builder {
 	return b
 }
 
+// Body is used to set the HTTP request body to send payload(JSON/string/slice/pointer) when "Do()" or "DoJson()" func is called.
+//
+// For Example,
+// Set JSON struct as the request body:
+// 		res, err := esrest.New().
+// 					Post("http://httpbin.org/post").
+//					Body(struct {
+//						Message string `json:"message"`
+//					}{"ok"}).
+// 					Do()
+//
+// Set JSON struct pointer as the request body:
+//       res, err := esrest.New().
+//       			Post("http://httpbin.org/post").
+//       			Body(&struct {
+//                  	Message string `json:"message"`
+//       			}{"ok"}).
+//       			Do()
+//
+// Set bytes slice as the request body:
+//      res, err := esrest.New().
+//      			Post("http://httpbin.org/post").
+//      			Body([]byte(`{"message":"ok"}`)).
+//      			Do()
+//
+// Set HTTP request body as string:
+//  	es, err := esrest.New().
+//      			Post("http://httpbin.org/post").
+//      			Body(string(`{"message":"ok"}`)).
+//       			Do()
 func (b *Builder) Body(v interface{}) *Builder {
 	rv := reflect.ValueOf(v)
 	//fmt.Printf("%+v\n",rv)
@@ -99,6 +132,7 @@ func (b *Builder) Body(v interface{}) *Builder {
 	return b
 }
 
+// Do executes the http request client and returns http.Response and error.
 func (b *Builder) Do() (*http.Response, error) {
 	if err := b.valid(); err != nil {
 		return nil, err
@@ -162,6 +196,7 @@ func (b *Builder) newRequest() *http.Request {
 	return req
 }
 
+// DoJson executes the http request client and returns http.Response and error.
 func (b *Builder) DoJson(v interface{}) (*http.Response, error) {
 	resp, err := b.Do()
 	if err != nil {
