@@ -2,13 +2,14 @@ package esrest
 
 import (
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type H struct {
@@ -145,8 +146,8 @@ func TestSendStructBody(t *testing.T) {
 		DoJson(h)
 	assert.Equal(t, 200, r.StatusCode)
 	assert.Equal(t, `{"message":"ok"}`, h.Data)
-
 }
+
 func TestSendPtrStructBody(t *testing.T) {
 	h := &H{}
 
@@ -160,7 +161,21 @@ func TestSendPtrStructBody(t *testing.T) {
 		DoJson(h)
 	assert.Equal(t, 200, r.StatusCode)
 	assert.Equal(t, `{"message":"ok"}`, h.Data)
+}
 
+func TestSendMap(t *testing.T) {
+	h := &H{}
+
+	b := map[string]interface{}{
+		"message": "ok",
+	}
+
+	r, _ := New().
+		Post("http://httpbin.org/post").
+		Body(b).
+		DoJson(h)
+	assert.Equal(t, 200, r.StatusCode)
+	assert.Equal(t, `{"message":"ok"}`, h.Data)
 }
 
 func TestDebugMode(t *testing.T) {

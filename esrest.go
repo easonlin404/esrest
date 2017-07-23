@@ -114,6 +114,16 @@ func (b *Builder) Query(key, value string) *Builder {
 //      			Post("http://httpbin.org/post").
 //      			Body(string(`{"message":"ok"}`)).
 //       			Do()
+//
+// Set HTTP request body as map:
+//      m := map[string]interface{}{
+//      		"message": "ok",
+//      }
+//
+//      res, err := esrest.New().
+//      		    Post("http://httpbin.org/post").
+//      		    Body(m).
+//      		    Do()
 func (b *Builder) Body(v interface{}) *Builder {
 	rv := reflect.ValueOf(v)
 	//fmt.Printf("%+v\n",rv)
@@ -125,7 +135,7 @@ func (b *Builder) Body(v interface{}) *Builder {
 	case reflect.Slice:
 		slice, _ := rv.Interface().([]byte)
 		b.bodyByte = slice
-	case reflect.Struct, reflect.Ptr:
+	case reflect.Map, reflect.Struct, reflect.Ptr:
 		byte, _ := json.Marshal(v)
 		b.bodyByte = byte
 	}

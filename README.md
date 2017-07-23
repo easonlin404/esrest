@@ -8,7 +8,7 @@ Easy, elegant, fluent HTTP client API for Go
 
 ## Features
 - [x] Support basic HTTP __GET__/__POST__/__PUT__/__DELETE__/__HEAD__  in a fluent style
-- [x] Only use `Body` fluent function to send payload(JSON/string/slice/pointer) 
+- [x] Only use `Body` fluent function to send payload(JSON/string/slice/pointer/map) 
 - [x] Basic Authentication
 - [x] Request timeout 
 - [x] Debug with customized Logger
@@ -64,6 +64,16 @@ res, err := esrest.New().
 res, err := esrest.New().
 		    Post("http://httpbin.org/post").
 		    Body(string(`{"message":"ok"}`)).
+		    Do()
+		    
+//map
+m := map[string]interface{}{
+		"message": "ok",
+	}
+	
+res, err := esrest.New().
+		    Post("http://httpbin.org/post").
+		    Body(m).
 		    Do()
 ```
 Add Query parameter:
