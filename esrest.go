@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-// Buiilder is a object that help to build fluent style API.
+// Builder is a object that help to build fluent style API.
 type Builder struct {
 	Url       string
 	Method    string
@@ -32,6 +32,7 @@ type Builder struct {
 
 type auth struct{ username, password string }
 
+// DefaultContentType is default http Content-Type="application/json" header.
 const DefaultContentType = "application/json"
 
 // New returns an new Builder object.
@@ -44,41 +45,48 @@ func New() *Builder {
 	}
 }
 
+// Get uses the http GET method with provided url and returns Builder.
 func (b *Builder) Get(url string) *Builder {
 	b.Url = url
 	b.Method = http.MethodGet
 	return b
 }
 
+// Post uses the http POST method with provided url and returns Builder.
 func (b *Builder) Post(url string) *Builder {
 	b.Url = url
 	b.Method = http.MethodPost
 	return b
 }
 
+// Put uses the http PUT method with provided url and returns Builder.
 func (b *Builder) Put(url string) *Builder {
 	b.Url = url
 	b.Method = http.MethodPut
 	return b
 }
 
+// Delete uses the http DELETE method with provided url and returns Builder.
 func (b *Builder) Delete(url string) *Builder {
 	b.Url = url
 	b.Method = http.MethodDelete
 	return b
 }
 
+// Head uses the http HEAD method with provided url and returns Builder.
 func (b *Builder) Head(url string) *Builder {
 	b.Url = url
 	b.Method = http.MethodHead
 	return b
 }
 
+// Header sets http header key with value and returns Builder.
 func (b *Builder) Header(key, value string) *Builder {
 	b.Headers[key] = value
 	return b
 }
 
+// Query sets http QUERY parameter key with value and returns Builder.
 func (b *Builder) Query(key, value string) *Builder {
 	b.Querys[key] = value
 	return b
@@ -234,6 +242,7 @@ func (b *Builder) Debug(debug bool) *Builder {
 	return b
 }
 
+// Logger sets the provided logger and returns Builder.
 func (b *Builder) Logger(log *log.Logger) *Builder {
 	b.logger = log
 	return b
